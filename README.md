@@ -39,7 +39,7 @@ docker run -d -e PASSWORD=final --rm -p 8787:8787 -v $(pwd):/home/rstudio/projec
 Go to the `localhost:8787` and start running the project.
 
 ## What to Look At
-Currently, data cleaning and EDA have been completed, and the final report contains only a few plots of EDA. Run the code below to view the current results.
+Currently, data cleaning and EDA have been completed, and the final report contains only a few plots of EDA. Run the code below to view the current results. (Be sure to run the code in the directory where the makefile is located.)
 ```
 make BIOS611_Final_Report_KyungjinSohn.pdf
 ```
