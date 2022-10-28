@@ -10,7 +10,7 @@ library(ggplot2)
 
 # 1. Read file
 cardio <- read.csv("./source_data/cardio_train.csv", header = TRUE, sep = ";")
-str(cardio)
+#str(cardio)
 num.rows <- nrow(cardio)
 
 # 2. Remove duplicate rows after removing the first column (just row number)
@@ -58,6 +58,13 @@ cardio.prep <- cardio.prep %>%
         na.omit() %>% 
         distinct(.keep_all = TRUE)
 num.rows <- c(num.rows, nrow(cardio.prep))
-num.rows
 
+# 7. Print output
+clean.summary <- data.frame(Step = c("Raw", "Remove duplicates", 
+                                     "Modify age and gender", "Remove outliers from BMI", 
+                                     "Remove outliers from blood pressure", "Remove NA"),
+                            TotalRows = num.rows)
+clean.summary
+
+# 8. Save the cleaned data
 write.csv(cardio.prep, "./derived_data/cardio_clean.csv", row.names = FALSE)
