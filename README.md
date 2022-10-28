@@ -41,7 +41,7 @@ Go to the `localhost:8787` and start running the project.
 ## What to Look At
 Currently, data cleaning and EDA have been completed, and the final report contains only a few plots of EDA. Run the code below to view the current results.
 ```
-make BIOS611_Final_Report_KyungjinSohn
+make BIOS611_Final_Report_KyungjinSohn.pdf
 ```
 This will generate all the results required for the report.
 
