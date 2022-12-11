@@ -1,6 +1,12 @@
-FROM rocker/verse 
+FROM rocker/verse
 RUN Rscript --no-restore --no-save -e "update.packages(ask = FALSE)"
 RUN Rscript --no-restore --no-save -e "install.packages('ggplot2')"
+RUN Rscript --no-restore --no-save -e "install.packages('MASS')"
+RUN Rscript --no-restore --no-save -e "install.packages('caret')"
+RUN Rscript --no-restore --no-save -e "install.packages('randomForest')"
+RUN Rscript --no-restore --no-save -e "install.packages('glmnet')"
+RUN Rscript --no-restore --no-save -e "install.packages('pROC')"
+RUN Rscript --no-restore --no-save -e "install.packages('knitr')"
 RUN Rscript --no-restore --no-save -e "tinytex::tlmgr_install(c('amsmath','iftex','pdftexcmds','infwarerr'))"
 RUN Rscript --no-restore --no-save -e "tinytex::tlmgr_install(c('kvoptions','epstopdf-pkg'))"
 RUN Rscript --no-restore --no-save -e "tinytex::tlmgr_install(c('etoolbox','xcolor','geometry'))"
