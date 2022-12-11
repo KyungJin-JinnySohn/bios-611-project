@@ -1,53 +1,120 @@
 ---
 title: "Classifying presence of cardiovascular disease"
 author: "KyungjinSohn"
-date: "10/27/2022"
+date: "12/10/2022"
 output: pdf_document
 indent: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
 ```
 
 Cardiovascular diseases, such as heart attacks, are usually acute events caused by a blockage that prevents blood from flowing to the heart. These are major causes of death and, according to the CDC, one person dies of cardiovascular disease every 34 seconds. In addition, one in five people died from heart disease in the United States in 2020. Since it is a disease directly related to life, it is very important to identify the presence of the disease as soon as possible and prevent the effects in advance. Therefore, we will create a machine learning model to determine the presence or absence of cardiovascular disease from the given data and compare the accuracy of the models.
 
 ## Data
 
-The data is from a Kaggle dataset named the 'Cardiovascular Disease dataset' (https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset). The dataset has 11 features available as predictors (id, age, gender, height, weight, ap_hi, ap_lo, cholesterol, gluc, smoke, alco, active) and one response variable, cardio. More specifically, in the table below, the first 10 rows are independent variables and the last row is response variables.
+The data is from a Kaggle dataset named the 'Cardiovascular Disease dataset' (<https://www.kaggle.com/datasets/sulianova/cardiovascular-disease-dataset>). The dataset has 11 features available as predictors (id, age, gender, height, weight, ap_hi, ap_lo, cholesterol, gluc, smoke, alco, active) and one response variable, cardio. More specifically, in the table below, the first 10 rows are independent variables and the last row is response variables.
 
-| Full Name | Column Name | Feature Type | Detail |
-| :-----: | :----: | ------ | ----------- |
-| Age | age | Objective Feature | int (days) |
-| Height | height | Objective Feature | int (cm) |
-| Weight | weight | Objective Feature | float (kg) |
-| Gender | gender | Objective Feature | categorical code |
-| Systolic blood pressure | ap_hi | Examination Feature | int |
-| Diastolic blood pressure | ap_lo | Examination Feature | int |
-| Cholesterol | cholesterol | Examination Feature | 1: normal, 2: above normal, 3: well above normal |
-| Glucose | gluc | Examination Feature | 1: normal, 2: above normal, 3: well above normal |
-| Smoking | smoke | Subjective Feature | binary |
-| Alcohol intake | alco | Subjective Feature | binary |
-| Physical activity | active | Subjective Feature | binary |
-| Presence or absence of cardiovascular disease | cardio | Target Variable | binary |
+|                   Full Name                   | Column Name | Feature Type        | Detail                                           |
+|:----------------:|:----------------:|------------------|-------------------|
+|                      Age                      |     age     | Objective Feature   | int (days)                                       |
+|                    Height                     |   height    | Objective Feature   | int (cm)                                         |
+|                    Weight                     |   weight    | Objective Feature   | float (kg)                                       |
+|                    Gender                     |   gender    | Objective Feature   | categorical code                                 |
+|            Systolic blood pressure            |    ap_hi    | Examination Feature | int                                              |
+|           Diastolic blood pressure            |    ap_lo    | Examination Feature | int                                              |
+|                  Cholesterol                  | cholesterol | Examination Feature | 1: normal, 2: above normal, 3: well above normal |
+|                    Glucose                    |    gluc     | Examination Feature | 1: normal, 2: above normal, 3: well above normal |
+|                    Smoking                    |    smoke    | Subjective Feature  | binary                                           |
+|                Alcohol intake                 |    alco     | Subjective Feature  | binary                                           |
+|               Physical activity               |   active    | Subjective Feature  | binary                                           |
+| Presence or absence of cardiovascular disease |   cardio    | Target Variable     | binary                                           |
 
 The objective feature is factual information, the examination feature is the result of the medical examination, and the subjective feature is the information provided by the patient.
 
-## EDA
+## Exploratory Data Analysis
 
-1. Distribution of age groups by the presence of cardiovascular disease
-2. Density of BMI by the presence of cardiovascular disease
+Before plotting data, we first cleaned the data. For example, Age was recorded in days, so we converted it into an integer age variable. Rather than using weight and height as individual variables, we thought the two relationships were meaningful. Therefore, we calculated BMI and used it as one variable. 
 
-![Age](figures/dist_age.png){width=50%} ![BMI](figures/dist_bmi.png){width=50%}
+$$BMI = \frac{weight_{(kg)}}{height_{(m)}^2}$$
 
-3. Box-plot of blood pressure by the presence of cardiovascular disease
-4. Distribution of Categorical var. by the presence of cardio disease
+In addition, the extreme range of blood pressure levels was considered outliers and removed. We followed the criteria in the figure below recommended by the American Heart Association. 
 
-![Blood Pressure](figures/box_ap.png){width=50%} ![Categorical variable](figures/bar_cate.png){width=50%}
+![Blood Pressure Criteria](source_data/blood_pressure_criteria.png){width="80%"}
+
+Lastly, duplicates and rows with NA values were extracted. After going through the data cleaning step, we implemented several plots to learn more about the data.
+
+1.  Distribution of age groups by the presence of cardiovascular disease
+
+    Cardio diseases can occur from the 40s, but generally, the older you are, the more likely you are to have related diseases.
+
+2.  Density of BMI by the presence of cardiovascular disease
+
+    The approximate distribution is similar, but the BMI level of patients with a cardio disease is slightly higher.
+
+![Age](figures/dist_age.png){width="50%"} ![BMI](figures/dist_bmi.png){width="50%"}
+
+3.  Box-plot of blood pressure by the presence of cardiovascular disease
+
+    Blood pressure in people with diseases is significantly higher. However, we can see that there are many outliers.
+
+4.  Distribution of Categorical var. by the presence of cardio disease
+
+    It seems that patients with cardio diseases have high cholesterol and glucose levels. However, other variables do not seem to show much difference.
+
+![Blood Pressure](figures/box_ap.png){width="50%"} ![Categorical variable](figures/bar_cate.png){width="50%"}
+
+## Models
+
+We are primarily interested in classifying the presence or absence of cardiovascular disease in a given variable. Therefore, we have implemented five machine-learning models to classify diseases.
+
+-   LDA (Linear Discriminant Analysis)
+-   QDA (Quadratic Discriminant Analysis)
+-   KNN (K-Nearest Neighbor)
+-   Random Forest
+-   Logistic Regression
+
+There were a total of 64,610 patient data, and we first divided the data into train and test data before implementing the above models. We used 75% of the data as train data and the remaining 25% as test data. Thus, the training set consisted of 48,457 rows, and 16,153 rows for the test set.
+
+The summary of accuracy and the varying rates of the model, including the true positive and false positive rates, are as follows. LDA, Random Forest, and Logistic had similarly high accuracy, and Logistic showed the highest accuracy around $72.38\%$.
+```{r, echo=FALSE}
+rates.summmary <- read.csv("./derived_data/rates_summary.csv", 
+                           row.names = 1, header = T)
+kable(rates.summmary, caption = "Summary of models")
+```
+
+1. LDA
+
+The AUC of the LDA model is 0.787. Since the value is bigger than 0.5 and close to 1, the performance of the model is moderately good.
+
+2. QDA
+
+The AUC of the QDA model is 0.754. It is slightly lower than the LDA model.
+
+![LDA ROC](figures/roc_LDA.png){width="50%"} ![QDA ROC](figures/roc_QDA.png){width="50%"}
+
+3. KNN
+
+The AUC of the KNN model is 0.783. It is similar to the LDA model.
+
+4. Logistic Regression
+
+The AUC of the Logistic Regression model is 0.787. It is the highest among the five different models, along with LDA.
+
+![KNN ROC](figures/roc_KNN.png){width="50%"} ![Logistic ROC](figures/roc_Logistic.png){width="50%"}
+
+5. Random Forest
+
+The AUC of the Random Forest model is 0.772. It is slightly lower than the LDA model.
+
+ ![Random Forest ROC](figures/roc_RandomForest.png){width="50%"} ![Random Forest Important Variables](figures/rf_important.png){width="50%"}
+In particular, we can see commonalities with the major variables we find in EDA by looking at graphs of important variables in the random forest model. For example, systolic blood pressure (ap_hi) is the most important variable, and diastolic blood pressure (ap_lo) is also the fourth most important variable. Next, BMI and Age are influential variables. Since then, cholesterol and glucose levels have been some meaningful variables.
 
 ## Reference
-* https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)
-* https://www.cdc.gov/heartdisease/facts.htm
-* https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings
-* https://www.cdc.gov/obesity/basics/adult-defining.html
 
+-   [https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)](https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)){.uri}
+-   <https://www.cdc.gov/heartdisease/facts.htm>
+-   <https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings>
+-   <https://www.cdc.gov/obesity/basics/adult-defining.html>
